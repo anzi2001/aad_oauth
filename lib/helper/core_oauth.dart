@@ -27,6 +27,9 @@ class CoreOAuth {
   Future<String?> getAccessToken() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getAccessToken');
 
+  Future<List<String>> getCookies() async => throw UnsupportedFailure(
+      ErrorType.unsupported, 'Unsupported getCookies');
+
   Future<String?> getIdToken() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getAccessToken');
 

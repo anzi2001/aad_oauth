@@ -19,6 +19,22 @@ class AuthStorage {
     await _secureStorage.write(key: _tokenIdentifier, value: json);
   }
 
+  Future<void> saveCookies(List<String> cookies) async{
+    await _secureStorage.write(key: "${_tokenIdentifier}_cookie", value: jsonEncode(cookies));
+  }
+
+  Future<List<String>> loadCookies() async{
+    var json = await _secureStorage.read(key: "${_tokenIdentifier}_cookie");
+    if (json == null) return [];
+    try {
+      var data = jsonDecode(json);
+      return data as List<String>;
+    } catch (exception) {
+      print(exception);
+      return [];
+    }
+  }
+
   Future<T> loadTokenFromCache<T extends Token>() async {
     var json = await _secureStorage.read(key: _tokenIdentifier);
     if (json == null) return emptyToken as FutureOr<T>;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:aad_oauth/helper/auth_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -10,11 +11,15 @@ class RequestCode {
   final Config _config;
   final AuthorizationRequest _authorizationRequest;
   final String _redirectUriHost;
+  late WebViewController controller;
   late NavigationDelegate _navigationDelegate;
+  final AuthStorage _authStorage;
   String? _code;
+  List<String> cookieList = [];
 
-  RequestCode(Config config)
+  RequestCode(Config config, AuthStorage authStorage)
       : _config = config,
+        _authStorage = authStorage,
         _authorizationRequest = AuthorizationRequest(config),
         _redirectUriHost = Uri.parse(config.redirectUri).host {
     _navigationDelegate = NavigationDelegate(
@@ -27,7 +32,7 @@ class RequestCode {
 
     final urlParams = _constructUrlParams();
     final launchUri = Uri.parse('${_authorizationRequest.url}?$urlParams');
-    final controller = WebViewController();
+    controller = WebViewController();
     await controller.setNavigationDelegate(_navigationDelegate);
     await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
 
@@ -73,6 +78,9 @@ class RequestCode {
   Future<NavigationDecision> _onNavigationRequest(
       NavigationRequest request) async {
     try {
+      String cookies = (await controller.runJavaScriptReturningResult("document.cookie")).toString();
+      cookieList.add(cookies);
+      _authStorage.saveCookies(cookieList);
       var uri = Uri.parse(request.url);
 
       if (uri.queryParameters['error'] != null) {
