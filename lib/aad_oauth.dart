@@ -33,6 +33,8 @@ class AadOAuth {
   /// Retrieve cached OAuth Access Token.
   Future<String?> getAccessToken() async => _coreOAuth.getAccessToken();
 
+  Future<List<String>> getCookies() async => _coreOAuth.getCookies();
+
   /// Retrieve cached OAuth Id Token.
   Future<String?> getIdToken() async => _coreOAuth.getIdToken();
 
