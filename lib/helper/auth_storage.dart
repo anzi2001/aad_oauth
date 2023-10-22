@@ -28,7 +28,7 @@ class AuthStorage {
     if (json == null) return [];
     try {
       var data = jsonDecode(json);
-      return data as List<String>;
+      return List<String>.from(data);
     } catch (exception) {
       print(exception);
       return [];
