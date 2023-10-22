@@ -5,6 +5,7 @@ import 'package:aad_oauth/model/config.dart';
 import 'package:aad_oauth/model/failure.dart';
 import 'package:aad_oauth/model/token.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../request_code.dart';
@@ -25,7 +26,10 @@ class MobileOAuth extends CoreOAuth {
           tokenIdentifier: config.tokenIdentifier,
           aOptions: config.aOptions,
         ),
-        _requestCode = RequestCode(config),
+        _requestCode = RequestCode(config, AuthStorage(
+          tokenIdentifier: config.tokenIdentifier,
+          aOptions: config.aOptions,
+        )),
         _requestToken = RequestToken(config);
 
   /// Perform Azure AD login.
@@ -96,7 +100,7 @@ class MobileOAuth extends CoreOAuth {
   }
 
   @override
-  Future<List<String>> getCookies() async => await _authStorage.loadCookies();
+  Future<List<Cookie>> getCookies() => _authStorage.loadCookies();
 
 
   /// Retrieve cached OAuth Id Token.

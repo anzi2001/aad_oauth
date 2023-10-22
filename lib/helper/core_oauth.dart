@@ -7,6 +7,7 @@ import 'package:aad_oauth/model/config.dart';
 import 'package:aad_oauth/model/failure.dart';
 import 'package:aad_oauth/model/token.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class CoreOAuth {
   CoreOAuth();
@@ -27,7 +28,7 @@ class CoreOAuth {
   Future<String?> getAccessToken() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getAccessToken');
 
-  Future<List<String>> getCookies() async => throw UnsupportedFailure(
+  Future<List<Cookie>> getCookies() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getCookies');
 
   Future<String?> getIdToken() async => throw UnsupportedFailure(

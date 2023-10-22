@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
 
+import 'package:aad_oauth/helper/auth_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -12,14 +12,16 @@ class RequestCode {
   final AuthorizationRequest _authorizationRequest;
   final String _redirectUriHost;
   late InAppWebViewController _controller;
-  CookieManager manager;
+  final CookieManager _manager;
+  final AuthStorage _authStorage;
   String? _code;
 
-  RequestCode(Config config)
+  RequestCode(Config config, AuthStorage storage)
       : _config = config,
         _authorizationRequest = AuthorizationRequest(config),
         _redirectUriHost = Uri.parse(config.redirectUri).host,
-        manager = CookieManager.instance();
+        _manager = CookieManager.instance(),
+        _authStorage = storage;
 
   Future<String?> requestCode() async {
     _code = null;
@@ -33,9 +35,6 @@ class RequestCode {
         crossPlatform: InAppWebViewOptions(
           useShouldOverrideUrlLoading: true,
         ),
-        ios: IOSInAppWebViewOptions(
-          sharedCookiesEnabled: true
-        )
       ),
       shouldOverrideUrlLoading: (controller, action) async{
         _onNavigationRequest(action.request);
@@ -84,9 +83,6 @@ class RequestCode {
     try {
       var uri = request.url;
       if(uri == null) return;
-      print("URI$uri");
-      List<Cookie> cookies = await manager.getCookies(url: uri);
-      log(cookies.toString());
 
       if (uri.queryParameters['error'] != null) {
         _config.navigatorKey.currentState!.pop();
@@ -96,8 +92,9 @@ class RequestCode {
 
       if (uri.queryParameters['code'] != null && checkHost) {
         _code = uri.queryParameters['code'];
-        List<Cookie> cookies = await manager.getCookies(url: Uri.parse("https://login.microsoftonline.com"));
-        log("COOKIE$cookies");
+        List<Cookie> cookies = await _manager.getCookies(url: Uri.parse("https://login.microsoftonline.com"));
+        List<Map<String,dynamic>> cookieJson = cookies.map((e) => e.toJson()).toList();
+        _authStorage.saveCookies(cookieJson);
         _config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}

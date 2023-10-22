@@ -7,6 +7,7 @@ import 'package:aad_oauth/helper/core_oauth.dart';
 import 'package:aad_oauth/model/failure.dart';
 import 'package:aad_oauth/model/token.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'model/config.dart';
 
@@ -33,7 +34,7 @@ class AadOAuth {
   /// Retrieve cached OAuth Access Token.
   Future<String?> getAccessToken() async => _coreOAuth.getAccessToken();
 
-  Future<List<String>> getCookies() async => _coreOAuth.getCookies();
+  Future<List<Cookie>> getCookies() async => _coreOAuth.getCookies();
 
   /// Retrieve cached OAuth Id Token.
   Future<String?> getIdToken() async => _coreOAuth.getIdToken();

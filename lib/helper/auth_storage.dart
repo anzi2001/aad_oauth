@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:aad_oauth/model/token.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart' hide AndroidOptions;
 import 'dart:convert' show jsonEncode, jsonDecode;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -19,16 +20,29 @@ class AuthStorage {
     await _secureStorage.write(key: _tokenIdentifier, value: json);
   }
 
-  Future<void> saveCookies(List<String> cookies) async{
+  Future<void> saveCookies(List<Map<String,dynamic>> cookies) async{
     await _secureStorage.write(key: "${_tokenIdentifier}_cookie", value: jsonEncode(cookies));
   }
 
-  Future<List<String>> loadCookies() async{
+  Future<List<Cookie>> loadCookies() async{
     var json = await _secureStorage.read(key: "${_tokenIdentifier}_cookie");
     if (json == null) return [];
     try {
-      var data = jsonDecode(json);
-      return List<String>.from(data);
+      var data = jsonDecode(json) as List<dynamic>;
+      return data.map((e) {
+        var mapped = Map<String,dynamic>.from(e);
+        return Cookie(
+          name: mapped["name"],
+          value: mapped["value"],
+          expiresDate: mapped["expiresDate"],
+          isSessionOnly: mapped["isSessionOnly"],
+          domain: mapped["domain"],
+          sameSite: mapped["sameSite"],
+          isSecure: mapped["isSecure"],
+          isHttpOnly: mapped["isHttpOnly"],
+          path: mapped["path"]
+        );
+      }).toList();
     } catch (exception) {
       print(exception);
       return [];
