@@ -94,7 +94,7 @@ class RequestCode {
         _code = uri.queryParameters['code'];
         List<Cookie> cookies = await _manager.getCookies(url: Uri.parse("https://login.microsoftonline.com"));
         List<Map<String,dynamic>> cookieJson = cookies.map((e) => e.toJson()).toList();
-        _authStorage.saveCookies(cookieJson);
+        await _authStorage.saveCookies(cookieJson);
         _config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}
