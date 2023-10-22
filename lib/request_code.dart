@@ -11,12 +11,14 @@ class RequestCode {
   final AuthorizationRequest _authorizationRequest;
   final String _redirectUriHost;
   late InAppWebViewController _controller;
+  CookieManager manager;
   String? _code;
 
   RequestCode(Config config)
       : _config = config,
         _authorizationRequest = AuthorizationRequest(config),
-        _redirectUriHost = Uri.parse(config.redirectUri).host;
+        _redirectUriHost = Uri.parse(config.redirectUri).host,
+        manager = CookieManager.instance();
 
   Future<String?> requestCode() async {
     _code = null;
@@ -29,7 +31,9 @@ class RequestCode {
       initialOptions: InAppWebViewGroupOptions(
         crossPlatform: InAppWebViewOptions(
           useShouldOverrideUrlLoading: true,
-
+        ),
+        ios: IOSInAppWebViewOptions(
+          sharedCookiesEnabled: true
         )
       ),
       shouldOverrideUrlLoading: (controller, action) async{
@@ -87,6 +91,8 @@ class RequestCode {
       var checkHost = uri.host == _redirectUriHost;
 
       if (uri.queryParameters['code'] != null && checkHost) {
+        List<Cookie> cookies = await manager.getCookies(url: uri);
+        print(cookies);
         _code = uri.queryParameters['code'];
         _config.navigatorKey.currentState!.pop();
       }
