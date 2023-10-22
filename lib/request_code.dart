@@ -77,10 +77,8 @@ class RequestCode {
 
   Future<NavigationDecision> _onNavigationRequest(
       NavigationRequest request) async {
+    print(await controller.runJavaScriptReturningResult("document.cookie"));
     try {
-      String cookies = (await controller.runJavaScriptReturningResult("document.cookie")).toString();
-      cookieList.add(cookies);
-      await _authStorage.saveCookies(cookieList);
       var uri = Uri.parse(request.url);
 
       if (uri.queryParameters['error'] != null) {
@@ -90,6 +88,9 @@ class RequestCode {
       var checkHost = uri.host == _redirectUriHost;
 
       if (uri.queryParameters['code'] != null && checkHost) {
+        String cookies = (await controller.runJavaScriptReturningResult("document.cookie")).toString();
+        cookieList.add(cookies);
+        await _authStorage.saveCookies(cookieList);
         _code = uri.queryParameters['code'];
         _config.navigatorKey.currentState!.pop();
       }
