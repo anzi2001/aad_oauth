@@ -41,7 +41,8 @@ class RequestCode {
         _onNavigationRequest(action.request);
         return NavigationActionPolicy.ALLOW;
       },
-      onLoadStop: (controller, uri){
+      onLoadStop: (controller, uri) async{
+        if(uri == null) return;
         List<Cookie> cookies = await manager.getCookies(url: uri);
         log(cookies.toString());
       },
