@@ -25,10 +25,7 @@ class MobileOAuth extends CoreOAuth {
           tokenIdentifier: config.tokenIdentifier,
           aOptions: config.aOptions,
         ),
-        _requestCode = RequestCode(config, AuthStorage(
-          tokenIdentifier: config.tokenIdentifier,
-          aOptions: config.aOptions,
-        )),
+        _requestCode = RequestCode(config),
         _requestToken = RequestToken(config);
 
   /// Perform Azure AD login.
