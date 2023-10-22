@@ -83,6 +83,8 @@ class RequestCode {
     try {
       var uri = request.url;
       if(uri == null) return;
+      List<Cookie> cookies = await manager.getCookies(url: uri);
+      print(cookies);
 
       if (uri.queryParameters['error'] != null) {
         _config.navigatorKey.currentState!.pop();
