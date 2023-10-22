@@ -42,8 +42,7 @@ class RequestCode {
         return NavigationActionPolicy.ALLOW;
       },
       onLoadStop: (controller, uri) async{
-        if(uri == null) return;
-        List<Cookie> cookies = await manager.getCookies(url: uri);
+        List<Cookie> cookies = await manager.getCookies(url: Uri.parse("login.microsoftonline.com"));
         log(cookies.toString());
       },
       onWebViewCreated: (controller){
