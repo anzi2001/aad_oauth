@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:aad_oauth/helper/auth_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'model/config.dart';
 import 'request/authorization_request.dart';
@@ -11,36 +10,30 @@ class RequestCode {
   final Config _config;
   final AuthorizationRequest _authorizationRequest;
   final String _redirectUriHost;
-  late WebViewController controller;
-  late NavigationDelegate _navigationDelegate;
-  final AuthStorage _authStorage;
+  late InAppWebViewController _controller;
   String? _code;
-  List<String> cookieList = [];
 
-  RequestCode(Config config, AuthStorage authStorage)
+  RequestCode(Config config)
       : _config = config,
-        _authStorage = authStorage,
         _authorizationRequest = AuthorizationRequest(config),
-        _redirectUriHost = Uri.parse(config.redirectUri).host {
-    _navigationDelegate = NavigationDelegate(
-      onNavigationRequest: _onNavigationRequest,
-    );
-  }
+        _redirectUriHost = Uri.parse(config.redirectUri).host;
 
   Future<String?> requestCode() async {
     _code = null;
 
     final urlParams = _constructUrlParams();
     final launchUri = Uri.parse('${_authorizationRequest.url}?$urlParams');
-    controller = WebViewController();
-    await controller.setNavigationDelegate(_navigationDelegate);
-    await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
 
-    await controller.setBackgroundColor(Colors.transparent);
-    await controller.setUserAgent(_config.userAgent);
-    await controller.loadRequest(launchUri);
-
-    final webView = WebViewWidget(controller: controller);
+    final webView = InAppWebView(
+      initialUrlRequest: URLRequest(url: launchUri),
+      shouldOverrideUrlLoading: (controller, action) async{
+        _onNavigationRequest(action.request);
+        return NavigationActionPolicy.ALLOW;
+      },
+      onWebViewCreated: (controller){
+        _controller = controller;
+      },
+    );
 
     if (_config.navigatorKey.currentState == null) {
       throw Exception(
@@ -57,8 +50,8 @@ class RequestCode {
           appBar: _config.appBar,
           body: WillPopScope(
             onWillPop: () async {
-              if (await controller.canGoBack()) {
-                await controller.goBack();
+              if (await _controller.canGoBack()) {
+                await _controller.goBack();
                 return false;
               }
               return true;
@@ -75,11 +68,11 @@ class RequestCode {
     return _code;
   }
 
-  Future<NavigationDecision> _onNavigationRequest(
-      NavigationRequest request) async {
-    print(await controller.runJavaScriptReturningResult("document.cookie"));
+  Future<void> _onNavigationRequest(
+      URLRequest request) async {
     try {
-      var uri = Uri.parse(request.url);
+      var uri = request.url;
+      if(uri == null) return;
 
       if (uri.queryParameters['error'] != null) {
         _config.navigatorKey.currentState!.pop();
@@ -88,18 +81,14 @@ class RequestCode {
       var checkHost = uri.host == _redirectUriHost;
 
       if (uri.queryParameters['code'] != null && checkHost) {
-        String cookies = (await controller.runJavaScriptReturningResult("document.cookie")).toString();
-        cookieList.add(cookies);
-        await _authStorage.saveCookies(cookieList);
         _code = uri.queryParameters['code'];
         _config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}
-    return NavigationDecision.navigate;
   }
 
   Future<void> clearCookies() async {
-    await WebViewCookieManager().clearCookies();
+    await CookieManager.instance().deleteAllCookies();
   }
 
   String _constructUrlParams() => _mapToQueryParams(
