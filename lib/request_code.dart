@@ -84,6 +84,7 @@ class RequestCode {
     try {
       var uri = request.url;
       if(uri == null) return;
+      print("URI$uri");
       List<Cookie> cookies = await manager.getCookies(url: uri);
       log(cookies.toString());
 
@@ -96,7 +97,7 @@ class RequestCode {
       if (uri.queryParameters['code'] != null && checkHost) {
         _code = uri.queryParameters['code'];
         List<Cookie> cookies = await manager.getCookies(url: Uri.parse("login.microsoftonline.com"));
-        log("COOKIE"+cookies.toString());
+        log("COOKIE$cookies");
         _config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}
