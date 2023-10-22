@@ -82,6 +82,7 @@ class RequestCode {
   Future<void> _onNavigationRequest(
       URLRequest request) async {
     try {
+      log(request.headers.toString());
       var uri = request.url;
       if(uri == null) return;
       List<Cookie> cookies = await manager.getCookies(url: uri);
