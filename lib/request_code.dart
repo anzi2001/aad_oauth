@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -84,7 +85,7 @@ class RequestCode {
       var uri = request.url;
       if(uri == null) return;
       List<Cookie> cookies = await manager.getCookies(url: uri);
-      print(cookies);
+      log(cookies.toString());
 
       if (uri.queryParameters['error'] != null) {
         _config.navigatorKey.currentState!.pop();
