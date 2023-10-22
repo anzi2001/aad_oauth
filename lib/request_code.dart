@@ -41,13 +41,6 @@ class RequestCode {
         _onNavigationRequest(action.request);
         return NavigationActionPolicy.ALLOW;
       },
-      onLoadStop: (controller, uri) async{
-        if(_code != null){
-          List<Cookie> cookies = await manager.getCookies(url: Uri.parse("login.microsoftonline.com"));
-          log(cookies.toString());
-          _config.navigatorKey.currentState!.pop();
-        }
-      },
       onWebViewCreated: (controller){
         _controller = controller;
       },
@@ -101,10 +94,10 @@ class RequestCode {
       var checkHost = uri.host == _redirectUriHost;
 
       if (uri.queryParameters['code'] != null && checkHost) {
-        List<Cookie> cookies = await manager.getCookies(url: uri);
-        print(cookies);
         _code = uri.queryParameters['code'];
-        //_config.navigatorKey.currentState!.pop();
+        List<Cookie> cookies = await manager.getCookies(url: Uri.parse("login.microsoftonline.com"));
+        log("COOKIE"+cookies.toString());
+        _config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}
   }
