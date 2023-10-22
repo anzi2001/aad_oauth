@@ -26,6 +26,12 @@ class RequestCode {
 
     final webView = InAppWebView(
       initialUrlRequest: URLRequest(url: launchUri),
+      initialOptions: InAppWebViewGroupOptions(
+        crossPlatform: InAppWebViewOptions(
+          useShouldOverrideUrlLoading: true,
+
+        )
+      ),
       shouldOverrideUrlLoading: (controller, action) async{
         _onNavigationRequest(action.request);
         return NavigationActionPolicy.ALLOW;
