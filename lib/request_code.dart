@@ -41,6 +41,10 @@ class RequestCode {
         _onNavigationRequest(action.request);
         return NavigationActionPolicy.ALLOW;
       },
+      onLoadStop: (controller, uri){
+        List<Cookie> cookies = await manager.getCookies(url: uri);
+        log(cookies.toString());
+      },
       onWebViewCreated: (controller){
         _controller = controller;
       },
@@ -82,7 +86,6 @@ class RequestCode {
   Future<void> _onNavigationRequest(
       URLRequest request) async {
     try {
-      log(request.headers.toString());
       var uri = request.url;
       if(uri == null) return;
       List<Cookie> cookies = await manager.getCookies(url: uri);
@@ -98,7 +101,7 @@ class RequestCode {
         List<Cookie> cookies = await manager.getCookies(url: uri);
         print(cookies);
         _code = uri.queryParameters['code'];
-        _config.navigatorKey.currentState!.pop();
+        //_config.navigatorKey.currentState!.pop();
       }
     } catch (_) {}
   }
