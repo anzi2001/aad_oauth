@@ -80,7 +80,7 @@ class RequestCode {
     try {
       String cookies = (await controller.runJavaScriptReturningResult("document.cookie")).toString();
       cookieList.add(cookies);
-      _authStorage.saveCookies(cookieList);
+      await _authStorage.saveCookies(cookieList);
       var uri = Uri.parse(request.url);
 
       if (uri.queryParameters['error'] != null) {
