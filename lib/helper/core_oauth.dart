@@ -31,6 +31,9 @@ class CoreOAuth {
   Future<List<Cookie>> getCookies() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getCookies');
 
+  Future<void> saveCookies(List<Cookie> cookies) async => throw UnsupportedFailure(
+      ErrorType.unsupported, 'Unsupported getCookies');
+
   Future<String?> getIdToken() async => throw UnsupportedFailure(
       ErrorType.unsupported, 'Unsupported getAccessToken');
 

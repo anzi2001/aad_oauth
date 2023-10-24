@@ -36,6 +36,8 @@ class AadOAuth {
 
   Future<List<Cookie>> getCookies() async => _coreOAuth.getCookies();
 
+  Future<void> saveCookies(List<Cookie> cookies) => _coreOAuth.saveCookies(cookies);
+
   /// Retrieve cached OAuth Id Token.
   Future<String?> getIdToken() async => _coreOAuth.getIdToken();
 

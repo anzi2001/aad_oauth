@@ -26,10 +26,12 @@ class MobileOAuth extends CoreOAuth {
           tokenIdentifier: config.tokenIdentifier,
           aOptions: config.aOptions,
         ),
-        _requestCode = RequestCode(config, AuthStorage(
-          tokenIdentifier: config.tokenIdentifier,
-          aOptions: config.aOptions,
-        )),
+        _requestCode = RequestCode(
+            config,
+            AuthStorage(
+              tokenIdentifier: config.tokenIdentifier,
+              aOptions: config.aOptions,
+            )),
         _requestToken = RequestToken(config);
 
   /// Perform Azure AD login.
@@ -102,6 +104,9 @@ class MobileOAuth extends CoreOAuth {
   @override
   Future<List<Cookie>> getCookies() => _authStorage.loadCookies();
 
+  @override
+  Future<void> saveCookies(List<Cookie> cookies) =>
+      _authStorage.saveCookies(cookies.map((e) => e.toJson()).toList());
 
   /// Retrieve cached OAuth Id Token.
   @override
